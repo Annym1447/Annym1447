@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoodSketch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/inicio.css">
+  <link rel="stylesheet" href="/static/css/auth-modal.css">
+  <style>
+    /* ── Banner de amigos (reemplaza el tagline) ── */
+    .banner-amigos {
+      margin: 0 1.25rem 1.25rem;
+      background: linear-gradient(135deg, #ff8c00 0%, #ff3d8b 100%);
+      border-radius: 20px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(255,61,139,.35);
+    }
+    .banner-amigos-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      text-decoration: none;
+    }
+    .banner-amigos-title {
+      font-size: 16px; font-weight: 900; color: #fff;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .banner-amigos-sub {
+      font-size: 12px; font-weight: 700; color: rgba(255,255,255,.75);
+      margin-top: 2px;
+    }
+    .banner-amigos-count {
+      background: rgba(255,255,255,.2);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .banner-amigos-link-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px 14px;
+    }
+    .banner-link-input {
+      flex: 1;
+      background: rgba(0,0,0,.2);
+      border: none;
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+      cursor: text;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .banner-link-input::placeholder { color: rgba(255,255,255,.5); }
+    .btn-copy-mini {
+      background: rgba(255,255,255,.25);
+      border: none; border-radius: 10px;
+      color: #fff; font-size: 18px;
+      padding: 8px 12px; cursor: pointer;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+    .btn-copy-mini:hover { background: rgba(255,255,255,.38); }
+    .btn-copy-mini:active { transform: scale(.93); }
+
+    /* Estado sin sesión */
+    .banner-amigos-nologin {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      cursor: pointer;
+    }
+    .banner-amigos-nologin-text {
+      font-size: 15px; font-weight: 800; color: #fff;
+    }
+    .banner-amigos-nologin-hint {
+      font-size: 12px; color: rgba(255,255,255,.7); margin-top: 2px; font-weight: 600;
+    }
+
+    @media (min-width: 768px) {
+      .banner-amigos { max-width: 900px; margin-left: auto; margin-right: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <button class="nav-icon" aria-label="Menú">☰</button>
+    <span class="nav-title">MOODSKETCH</span>
+    <button class="nav-user-btn" id="navUserBtn" aria-label="Usuario" title="Usuario">
+      <span class="nav-user-avatar" id="navUserAvatar">👤</span>
+    </button>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <h1 class="hero-title">¿Cómo te sientes hoy?</h1>
+    <div class="hero-illustration">
+      <div class="notebook">
+        <span class="notebook-face">📓</span>
+        <span class="notebook-plus">+</span>
+      </div>
+    </div>
+    <a href="/nueva" class="btn-hero">✨ Escribir entrada</a>
+    <p class="hero-sub">¡Porque no todos los días son iguales!</p>
+  </section>
+
+  <!-- ── Banner Mis Entradas ─────────────────────────────────────────────────── -->
+  <a href="/entradas" class="banner-calendario">
+    <div class="banner-content">
+      <span class="banner-emojis">⭐ 🌧️ 😶 🔥 🌿</span>
+      <p class="banner-title">📅 Mis entradas</p>
+      <span class="banner-emojis">🪐 😊 💧 ⭐ 🌵</span>
+    </div>
+  </a>
+
+  <!-- ── Stats ──────────────────────────────────────────────────────────────── -->
+  <div class="stats-home" id="statsHome">
+    <div class="stat-home">
+      <span class="stat-home-num" id="statTotal">0</span>
+      <span class="stat-home-label">Entradas</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-home">
+      <span class="stat-home-num" id="statDias">0</span>
+      <span class="stat-home-label">Días</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-home">
+      <span class="stat-home-num" id="statHumor">—</span>
+      <span class="stat-home-label">Humor top</span>
+    </div>
+  </div>
+
+  <!-- ── Banner Amigos (reemplaza el tagline naranja) ──────────────────────── -->
+  <div class="banner-amigos" id="bannerAmigos">
+    <!-- Se rellena por JS -->
+    <div class="banner-amigos-nologin" onclick="MoodAuth.open()">
+      <div>
+    <p class="banner-amigos-nologin-text" style="text-align: center;">🤝 ¡Siempre contigo!</p>
+    <p class="banner-amigos-nologin-hint" style="text-align: center;">Inicia sesión para invitar amigos</p>
+
+      </div>
+      <span style="font-size:22px;color:rgba(255,255,255,.7)">→</span>
+    </div>
+  </div>
+
+  <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
+  <script src="/static/js/auth-modal.js"></script>
+  <script>
+    // Stats
+    fetch("/api/stats")
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById("statTotal").textContent = d.total     ?? 0;
+        document.getElementById("statDias").textContent  = d.dias      ?? 0;
+        document.getElementById("statHumor").textContent = d.humor_top ?? "—";
+      }).catch(() => {});
+
+    // Banner de amigos — espera que auth-modal detecte sesión
+    async function initBannerAmigos() {
+      await new Promise(r => setTimeout(r, 450));
+      const sesResp = await fetch("/api/auth/me", { credentials: "include" });
+      const sesData = await sesResp.json();
+      const user    = sesData.user;
+      const banner  = document.getElementById("bannerAmigos");
+
+      if (!user) return; // deja el estado por defecto (iniciar sesión)
+
+      // Traer código y cantidad de amigos en paralelo
+      const [codRes, amiRes] = await Promise.all([
+        fetch("/api/amigos/mi_codigo", { credentials: "include" }),
+        fetch("/api/amigos/listar",    { credentials: "include" }),
+      ]);
+      const codData = await codRes.json();
+      const amiData = await amiRes.json();
+
+      const codigo       = codData.codigo || "";
+      const totalAmigos  = (amiData.amigos || []).length;
+      const linkInvitar  = `${location.origin}/amigos?unirse=${codigo}`;
+
+      banner.innerHTML = `
+        <a href="/amigos" class="banner-amigos-main" style="text-decoration:none">
+          <div class="banner-amigos-left">
+              <p class="banner-amigos-nologin-text" style="text-align: center;">🤝 ¡Siempre contigo!</p>
+              <p class="banner-amigos-nologin-hint" style="text-align: center;">Inicia sesión para invitar amigos</p>
+
+          </div>
+          <span class="banner-amigos-count">${totalAmigos} amigo${totalAmigos !== 1 ? "s" : ""}</span>
+        </a>
+        <div class="banner-amigos-link-row">
+          <input class="banner-link-input" id="linkInput"
+                 value="${linkInvitar}" readonly
+                 onclick="this.select()" title="Tu link de invitación">
+          <button class="btn-copy-mini" id="btnCopyMini" title="Copiar link">📋</button>
+        </div>`;
+
+      document.getElementById("btnCopyMini").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(linkInvitar); }
+        catch (_) {
+          const i = document.getElementById("linkInput");
+          i.select(); document.execCommand("copy");
+        }
+        const btn = document.getElementById("btnCopyMini");
+        btn.textContent = "✅";
+        setTimeout(() => btn.textContent = "📋", 2000);
+      });
+    }
+
+    initBannerAmigos();
+  </script>
+</body>
+</html>

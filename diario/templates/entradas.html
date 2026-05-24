@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis entradas · MoodSketch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/inicio.css">
+  <link rel="stylesheet" href="/static/css/auth-modal.css">
+  <style>
+    /* ── Estilos específicos de la página de entradas ── */
+    .entries-page {
+      padding: 16px;
+    }
+
+    /* ── Filtros ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .filter-btn {
+      background: #13134a;
+      border: 1px solid #2a2a6a;
+      color: #a0a0dd;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .filter-btn:hover  { background: #1a1a5a; color: #fff; }
+    .filter-btn.active { background: #ff3d8b; border-color: #ff3d8b; color: #fff; }
+
+    /* ── Barra de búsqueda ── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #13134a;
+      border: 1px solid #2a2a6a;
+      border-radius: 14px;
+      padding: 10px 16px;
+      gap: 10px;
+      margin-bottom: 16px;
+      transition: border-color .2s;
+    }
+    .search-bar:focus-within { border-color: #00e5b0; }
+    .search-bar span { font-size: 16px; }
+    .search-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .search-input::placeholder { color: #3a3a7a; }
+
+    /* ── Lista de entradas ── */
+    .entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .entry-card {
+      background: #13134a;
+      border: 1px solid #2a2a6a;
+      border-radius: 18px;
+      padding: 16px 18px;
+      position: relative;
+      transition: transform .15s, border-color .15s;
+      cursor: default;
+    }
+    .entry-card:hover { transform: translateY(-1px); border-color: #3a3a8a; }
+
+    .entry-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .entry-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .entry-mood {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .entry-datetime {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6060aa;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .entry-delete {
+      background: none;
+      border: none;
+      color: #3a3a7a;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: color .15s, background .15s;
+    }
+    .entry-delete:hover { color: #ff3d8b; background: rgba(255,61,139,.08); }
+
+    .entry-card-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #c0c0e8;
+      line-height: 1.65;
+      /* Truncar a 3 líneas */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Estado vacío ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .empty-state-emoji {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .empty-state-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .empty-state-sub {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6060aa;
+      margin-bottom: 24px;
+    }
+    .btn-empty {
+      display: inline-block;
+      background: #ff3d8b;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 12px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(255,61,139,.4);
+    }
+
+    /* ── Loading skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, #13134a 25%, #1a1a5a 50%, #13134a 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 18px;
+      height: 100px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (min-width: 768px) {
+      .entries-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+      }
+      .entries-page { max-width: 900px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <a href="/" class="nav-icon" style="text-decoration:none" aria-label="Inicio">←</a>
+    <span class="nav-title">MIS ENTRADAS</span>
+    <!-- Botón de usuario → abre el modal de auth -->
+    <button class="nav-user-btn" id="navUserBtn" aria-label="Usuario" title="Usuario">
+      <span class="nav-user-avatar" id="navUserAvatar">👤</span>
+    </button>
+  </nav>
+
+  <!-- ── Contenido principal ────────────────────────────────────────────────── -->
+  <main class="entries-page">
+
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <span>🔍</span>
+      <input
+        class="search-input"
+        id="searchInput"
+        type="text"
+        placeholder="Buscar en tus entradas…"
+        autocomplete="off"
+      >
+    </div>
+
+    <!-- Filtros por humor -->
+    <div class="filters" id="filtersBar">
+      <button class="filter-btn active" data-humor="">Todas</button>
+      <button class="filter-btn" data-humor="😊">😊 Feliz</button>
+      <button class="filter-btn" data-humor="😢">😢 Triste</button>
+      <button class="filter-btn" data-humor="😤">😤 Enojado</button>
+      <button class="filter-btn" data-humor="😴">😴 Cansado</button>
+      <button class="filter-btn" data-humor="🥳">🥳 Emocionado</button>
+      <button class="filter-btn" data-humor="😰">😰 Ansioso</button>
+      <button class="filter-btn" data-humor="🤔">🤔 Pensativo</button>
+      <button class="filter-btn" data-humor="🥺">🥺 Nostálgico</button>
+    </div>
+
+    <!-- Lista de entradas -->
+    <div class="entries-list" id="entriesList">
+      <!-- Skeletons de carga -->
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+
+  </main>
+
+  <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
+  <script src="/static/js/auth-modal.js"></script>
+  <script>
+    // ── Estado ──────────────────────────────────────────────────────────────
+    let humorFiltro = "";
+    let buscarTexto = "";
+    let searchTimer = null;
+
+    // ── Cargar entradas ─────────────────────────────────────────────────────
+    async function cargarEntradas() {
+      const params = new URLSearchParams();
+      if (humorFiltro) params.set("humor", humorFiltro);
+      if (buscarTexto) params.set("buscar", buscarTexto);
+
+      try {
+        const res  = await fetch(`/api/entradas?${params}`);
+        const data = await res.json();
+        renderEntradas(data);
+      } catch (_) {
+        document.getElementById("entriesList").innerHTML =
+          `<p style="text-align:center;color:#ff3d8b;font-weight:700;padding:40px">
+             Error al cargar entradas 😕
+           </p>`;
+      }
+    }
+
+    // ── Renderizar entradas ──────────────────────────────────────────────────
+    function renderEntradas(entradas) {
+      const list = document.getElementById("entriesList");
+
+      if (!entradas.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-state-emoji">📝</span>
+            <p class="empty-state-title">Aún no hay entradas</p>
+            <p class="empty-state-sub">Cada día es una nueva historia que contar</p>
+            <a href="/nueva" class="btn-empty">✨ Escribir ahora</a>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = entradas.map(e => `
+        <article class="entry-card" data-id="${e.id}">
+          <div class="entry-card-header">
+            <div class="entry-card-meta">
+              <span class="entry-mood">${e.humor || "📝"}</span>
+              <div>
+                <p class="entry-datetime">${e.fecha}</p>
+                <p class="entry-datetime">${e.hora}</p>
+              </div>
+            </div>
+            <button class="entry-delete" onclick="eliminarEntrada(${e.id})" title="Eliminar">🗑️</button>
+          </div>
+          <p class="entry-card-text">${escapeHtml(e.texto)}</p>
+        </article>
+      `).join("");
+    }
+
+    // ── Eliminar entrada ─────────────────────────────────────────────────────
+    async function eliminarEntrada(id) {
+      if (!confirm("¿Eliminar esta entrada?")) return;
+      await fetch(`/api/entradas/${id}`, { method: "DELETE" });
+      cargarEntradas();
+    }
+
+    // ── Escape HTML ──────────────────────────────────────────────────────────
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // ── Filtros de humor ─────────────────────────────────────────────────────
+    document.getElementById("filtersBar").addEventListener("click", e => {
+      const btn = e.target.closest(".filter-btn");
+      if (!btn) return;
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      humorFiltro = btn.dataset.humor;
+      cargarEntradas();
+    });
+
+    // ── Búsqueda con debounce ────────────────────────────────────────────────
+    document.getElementById("searchInput").addEventListener("input", e => {
+      clearTimeout(searchTimer);
+      buscarTexto = e.target.value.trim();
+      searchTimer = setTimeout(cargarEntradas, 300);
+    });
+
+    // ── Arranque ─────────────────────────────────────────────────────────────
+    cargarEntradas();
+  </script>
+</body>
+</html>

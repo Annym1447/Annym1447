@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis amigos · MoodSketch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/inicio.css">
+  <link rel="stylesheet" href="/static/css/auth-modal.css">
+  <style>
+    .amigos-page { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+    /* ── Mi código ── */
+    .mi-codigo-card {
+      background: linear-gradient(135deg, #1a1a6a, #0d2d5a);
+      border: 1px solid #2a4a8a;
+      border-radius: 20px;
+      padding: 22px 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .mi-codigo-label {
+      font-size: 11px; font-weight: 800; color: #6060aa;
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px;
+    }
+    .mi-codigo-valor {
+      font-size: 28px; font-weight: 900; color: #00e5b0;
+      letter-spacing: .15em; margin-bottom: 14px;
+      font-family: 'Courier New', monospace;
+    }
+    .btn-copiar-link {
+      background: #ff3d8b; color: #fff;
+      border: none; border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 800;
+      padding: 11px 28px; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(255,61,139,.4);
+      transition: transform .15s, box-shadow .15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-copiar-link:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255,61,139,.55); }
+    .btn-copiar-link:active { transform: scale(.97); }
+    .codigo-hint { font-size: 12px; color: #6060aa; font-weight: 600; margin-top: 10px; }
+
+    /* ── Agregar amigo ── */
+    .agregar-card {
+      background: #13134a; border: 1px solid #2a2a6a;
+      border-radius: 20px; padding: 18px 20px; margin-bottom: 20px;
+    }
+    .agregar-title {
+      font-size: 13px; font-weight: 800; color: #00e5b0;
+      text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px;
+    }
+    .agregar-row { display: flex; gap: 10px; }
+    .input-codigo {
+      flex: 1; background: #0d0d2b; border: 1.5px solid #2a2a6a;
+      border-radius: 12px; padding: 12px 16px;
+      color: #fff; font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 700; outline: none;
+      text-transform: uppercase; letter-spacing: .1em;
+      transition: border-color .2s;
+    }
+    .input-codigo:focus { border-color: #00e5b0; }
+    .input-codigo::placeholder { color: #3a3a7a; text-transform: none; letter-spacing: 0; }
+    .btn-agregar {
+      background: #00e5b0; color: #0d0d2b;
+      border: none; border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 900;
+      padding: 12px 20px; cursor: pointer;
+      transition: background .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .btn-agregar:hover { background: #00ccaa; }
+    .btn-agregar:active { transform: scale(.96); }
+    .agregar-msg {
+      font-size: 12px; font-weight: 700; margin-top: 10px;
+      padding: 8px 14px; border-radius: 10px; display: none;
+    }
+    .agregar-msg.ok    { color: #00e5b0; background: rgba(0,229,176,.08); border: 1px solid rgba(0,229,176,.2); display: block; }
+    .agregar-msg.error { color: #ff3d8b; background: rgba(255,61,139,.08); border: 1px solid rgba(255,61,139,.2); display: block; }
+
+    /* ── Lista de amigos ── */
+    .amigos-titulo {
+      font-size: 13px; font-weight: 800; color: #6060aa;
+      text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: 12px;
+    }
+    .amigos-lista { display: flex; flex-direction: column; gap: 10px; }
+
+    .amigo-card {
+      background: #13134a; border: 1px solid #2a2a6a;
+      border-radius: 16px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color .15s, transform .15s;
+    }
+    .amigo-card:hover { border-color: #3a3a8a; transform: translateY(-1px); }
+    .amigo-avatar { font-size: 36px; line-height: 1; flex-shrink: 0; }
+    .amigo-info { flex: 1; min-width: 0; }
+    .amigo-nombre { font-size: 15px; font-weight: 900; color: #fff; }
+    .amigo-bio {
+      font-size: 12px; font-weight: 600; color: #6060aa;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    .amigo-fecha { font-size: 10px; color: #3a3a7a; font-weight: 700; margin-top: 4px; }
+    .btn-eliminar-amigo {
+      background: none; border: none; color: #3a3a7a;
+      font-size: 18px; cursor: pointer; padding: 6px;
+      border-radius: 8px; transition: color .15s, background .15s;
+      flex-shrink: 0;
+    }
+    .btn-eliminar-amigo:hover { color: #ff3d8b; background: rgba(255,61,139,.08); }
+
+    /* ── Empty state ── */
+    .empty-amigos {
+      text-align: center; padding: 50px 20px;
+    }
+    .empty-amigos-emoji { font-size: 56px; display: block; margin-bottom: 14px; }
+    .empty-amigos-title { font-size: 17px; font-weight: 900; color: #fff; margin-bottom: 6px; }
+    .empty-amigos-sub   { font-size: 13px; font-weight: 600; color: #6060aa; }
+
+    /* ── No autenticado ── */
+    .no-auth {
+      text-align: center; padding: 60px 20px;
+    }
+    .no-auth-emoji  { font-size: 56px; display: block; margin-bottom: 14px; }
+    .no-auth-title  { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 8px; }
+    .no-auth-sub    { font-size: 14px; font-weight: 600; color: #6060aa; margin-bottom: 24px; }
+    .btn-login-cta  {
+      background: #ff3d8b; color: #fff;
+      border: none; border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 800;
+      padding: 13px 32px; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,61,139,.4);
+    }
+
+    /* skeleton */
+    .skeleton-amigo {
+      background: linear-gradient(90deg, #13134a 25%, #1a1a5a 50%, #13134a 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite;
+      border-radius: 16px; height: 72px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    @media (min-width: 768px) {
+      .amigos-lista { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/" class="nav-icon" style="text-decoration:none" aria-label="Inicio">←</a>
+    <span class="nav-title">MIS AMIGOS</span>
+    <button class="nav-user-btn" id="navUserBtn" aria-label="Usuario">
+      <span class="nav-user-avatar" id="navUserAvatar">👤</span>
+    </button>
+  </nav>
+
+  <main class="amigos-page" id="mainContent">
+    <!-- Se renderiza por JS según estado de sesión -->
+    <div class="skeleton-amigo"></div>
+    <div class="skeleton-amigo" style="margin-top:10px"></div>
+  </main>
+
+  <script src="/static/js/auth-modal.js"></script>
+  <script>
+    // ── Esperar a que auth-modal detecte la sesión ──────────────────────────
+    async function init() {
+      // Pequeña espera para que auth-modal.js cargue la sesión
+      await new Promise(r => setTimeout(r, 400));
+
+      const sesResp = await fetch("/api/auth/me", { credentials: "include" });
+      const sesData = await sesResp.json();
+      const user    = sesData.user;
+
+      const main = document.getElementById("mainContent");
+
+      if (!user) {
+        main.innerHTML = `
+          <div class="no-auth">
+            <span class="no-auth-emoji">🔒</span>
+            <p class="no-auth-title">Inicia sesión primero</p>
+            <p class="no-auth-sub">Necesitas una cuenta para agregar amigos</p>
+            <button class="btn-login-cta" onclick="MoodAuth.open()">Iniciar sesión</button>
+          </div>`;
+        return;
+      }
+
+      // Obtener mi código
+      const codResp = await fetch("/api/amigos/mi_codigo", { credentials: "include" });
+      const codData = await codResp.json();
+      const codigo  = codData.codigo || "—";
+      const linkInvitacion = `${location.origin}/amigos?unirse=${codigo}`;
+
+      main.innerHTML = `
+        <!-- Mi código -->
+        <div class="mi-codigo-card">
+          <p class="mi-codigo-label">Tu código de invitación</p>
+          <p class="mi-codigo-valor" id="miCodigo">${codigo}</p>
+          <button class="btn-copiar-link" id="btnCopiarLink">
+            🔗 Copiar link de invitación
+          </button>
+          <p class="codigo-hint">Compártelo con tus amigos para que te agreguen</p>
+        </div>
+
+        <!-- Agregar amigo -->
+        <div class="agregar-card">
+          <p class="agregar-title">➕ Agregar amigo por código</p>
+          <div class="agregar-row">
+            <input class="input-codigo" id="inputCodigo"
+                   placeholder="Pega el código aquí" maxlength="12">
+            <button class="btn-agregar" id="btnAgregar">Agregar</button>
+          </div>
+          <div class="agregar-msg" id="agregarMsg"></div>
+        </div>
+
+        <!-- Lista -->
+        <p class="amigos-titulo">👥 Mis amigos</p>
+        <div class="amigos-lista" id="amigosList">
+          <div class="skeleton-amigo"></div>
+          <div class="skeleton-amigo"></div>
+        </div>`;
+
+      // Copiar link
+      document.getElementById("btnCopiarLink").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(linkInvitacion);
+        } catch (_) {
+          // fallback
+          const ta = document.createElement("textarea");
+          ta.value = linkInvitacion;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+        const btn = document.getElementById("btnCopiarLink");
+        btn.textContent = "✅ ¡Copiado!";
+        setTimeout(() => btn.innerHTML = "🔗 Copiar link de invitación", 2000);
+      });
+
+      // Agregar amigo
+      document.getElementById("btnAgregar").addEventListener("click", agregarAmigo);
+      document.getElementById("inputCodigo").addEventListener("keydown", e => {
+        if (e.key === "Enter") agregarAmigo();
+      });
+
+      // Cargar amigos
+      cargarAmigos();
+
+      // Si llegó con ?unirse=CODIGO en la URL, autocompletar
+      const params = new URLSearchParams(location.search);
+      const codigoUrl = params.get("unirse");
+      if (codigoUrl && codigoUrl !== codigo) {
+        document.getElementById("inputCodigo").value = codigoUrl.toUpperCase();
+        agregarAmigo();
+      }
+    }
+
+    async function agregarAmigo() {
+      const codigo = document.getElementById("inputCodigo").value.trim().toUpperCase();
+      const msg    = document.getElementById("agregarMsg");
+      msg.className = "agregar-msg";
+      msg.textContent = "";
+
+      if (!codigo) { msg.className = "agregar-msg error"; msg.textContent = "Escribe un código"; return; }
+
+      const r    = await fetch("/api/amigos/aceptar", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ codigo })
+      });
+      const data = await r.json();
+
+      if (data.ok) {
+        msg.className   = "agregar-msg ok";
+        msg.textContent = `🎉 ¡Ahora eres amigo de ${data.amigo.nombre}!`;
+        document.getElementById("inputCodigo").value = "";
+        cargarAmigos();
+      } else {
+        msg.className   = "agregar-msg error";
+        msg.textContent = data.error || "Error al agregar";
+      }
+    }
+
+    async function cargarAmigos() {
+      const r    = await fetch("/api/amigos/listar", { credentials: "include" });
+      const data = await r.json();
+      renderAmigos(data.amigos || []);
+    }
+
+    function renderAmigos(lista) {
+      const el = document.getElementById("amigosList");
+      if (!lista.length) {
+        el.innerHTML = `
+          <div class="empty-amigos" style="grid-column:1/-1">
+            <span class="empty-amigos-emoji">🤝</span>
+            <p class="empty-amigos-title">Aún no tienes amigos</p>
+            <p class="empty-amigos-sub">Comparte tu código y empieza a conectar</p>
+          </div>`;
+        return;
+      }
+      el.innerHTML = lista.map(a => `
+        <div class="amigo-card">
+          <span class="amigo-avatar">${a.avatar_emoji || "😊"}</span>
+          <div class="amigo-info">
+            <p class="amigo-nombre">${escHtml(a.nombre)}</p>
+            <p class="amigo-bio">${a.bio ? escHtml(a.bio) : "Sin bio aún"}</p>
+            <p class="amigo-fecha">Amigos desde ${formatFecha(a.creado_en)}</p>
+          </div>
+          <button class="btn-eliminar-amigo" onclick="eliminarAmigo(${a.id})" title="Eliminar amigo">✕</button>
+        </div>`).join("");
+    }
+
+    async function eliminarAmigo(id) {
+      if (!confirm("¿Eliminar a este amigo?")) return;
+      await fetch("/api/amigos/eliminar", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amigo_id: id })
+      });
+      cargarAmigos();
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+    function formatFecha(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return d.toLocaleDateString("es-ES", { day:"numeric", month:"short", year:"numeric" });
+    }
+
+    init();
+  </script>
+</body>
+</html>

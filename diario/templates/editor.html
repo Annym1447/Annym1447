@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva entrada · MoodSketch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/editor.css">
+  <link rel="stylesheet" href="/static/css/auth-modal.css">
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <a href="/" class="nav-back" aria-label="Volver">←</a>
+    <span class="nav-title">NUEVA ENTRADA</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="mood-display" id="mood-display">😊</span>
+      <!-- Botón de usuario → abre el modal de auth -->
+      <button class="nav-user-btn" id="navUserBtn" aria-label="Usuario" title="Usuario">
+        <span class="nav-user-avatar" id="navUserAvatar">👤</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Layout editor ──────────────────────────────────────────────────────── -->
+  <div class="editor-layout">
+
+    <!-- ── Sidebar herramientas ───────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <!-- Escribir -->
+      <button class="tool-btn active" id="tool-escribir" title="Escribir">✏️</button>
+
+      <!-- Color de fondo -->
+      <div class="color-picker-wrap">
+        <button class="tool-btn" id="tool-color" title="Color de fondo">🎨</button>
+        <div class="color-palette" id="color-palette">
+          <span class="color-dot active" data-bg="#ffffff" data-grid="#e0e0e0" style="background:#ffffff;border:1px solid #ccc" title="Blanco"></span>
+          <span class="color-dot" data-bg="#fff9f0" data-grid="#f5e6cc" style="background:#fff9f0" title="Crema"></span>
+          <span class="color-dot" data-bg="#f0fff4" data-grid="#c6f6d5" style="background:#f0fff4" title="Menta"></span>
+          <span class="color-dot" data-bg="#fff0f6" data-grid="#ffd6e7" style="background:#fff0f6" title="Rosa"></span>
+          <span class="color-dot" data-bg="#f0f4ff" data-grid="#c3d2f5" style="background:#f0f4ff" title="Cielo"></span>
+          <span class="color-dot" data-bg="#fffde7" data-grid="#fff176" style="background:#fffde7" title="Amarillo"></span>
+          <span class="color-dot" data-bg="#1a1a2e" data-grid="#2a2a4a" style="background:#1a1a2e" title="Oscuro"></span>
+        </div>
+      </div>
+
+      <!-- Humor / estado de ánimo -->
+      <button class="tool-btn" id="tool-humor" title="Estado de ánimo">😊</button>
+      <div class="mood-panel" id="mood-panel">
+        <button class="mood-opt" data-mood="😊" title="Feliz">😊</button>
+        <button class="mood-opt" data-mood="😢" title="Triste">😢</button>
+        <button class="mood-opt" data-mood="😤" title="Enojado">😤</button>
+        <button class="mood-opt" data-mood="😴" title="Cansado">😴</button>
+        <button class="mood-opt" data-mood="🥳" title="Emocionado">🥳</button>
+        <button class="mood-opt" data-mood="😰" title="Ansioso">😰</button>
+        <button class="mood-opt" data-mood="🤔" title="Pensativo">🤔</button>
+        <button class="mood-opt" data-mood="🥺" title="Nostálgico">🥺</button>
+        <button class="mood-opt" data-mood="😎" title="Cool">😎</button>
+        <button class="mood-opt" data-mood="🤩" title="Inspirado">🤩</button>
+      </div>
+
+      <!-- Fuente -->
+      <button class="tool-btn" id="tool-texto" title="Fuente">Aa</button>
+
+      <div class="sidebar-spacer"></div>
+
+      <!-- Guardar -->
+      <button class="tool-btn save" id="save-btn" title="Guardar entrada">💾</button>
+    </aside>
+
+    <!-- ── Área de escritura ───────────────────────────────────────────────── -->
+    <div class="canvas-area" id="canvas-area">
+      <p class="entry-date" id="entry-date"></p>
+      <textarea
+        class="entry-textarea"
+        id="entry-text"
+        placeholder="Escribe lo que sientes hoy…"
+        maxlength="3000"
+        autofocus
+      ></textarea>
+      <p class="char-count" id="char-count">0 / 3000</p>
+    </div>
+  </div><!-- /editor-layout -->
+
+  <!-- ── Panel de fuentes (fijo en la parte inferior) ───────────────────────── -->
+  <div class="font-panel" id="font-panel">
+    <button class="font-opt active" data-font="'Nunito', sans-serif">Nunito</button>
+    <button class="font-opt" data-font="'Georgia', serif">Serif</button>
+    <button class="font-opt" data-font="'Courier New', monospace">Mono</button>
+    <button class="font-opt" data-font="cursive">Cursiva</button>
+  </div>
+
+  <!-- ── Toast de notificaciones ────────────────────────────────────────────── -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
+  <script src="/static/js/auth-modal.js"></script>
+  <script src="/static/js/editor.js"></script>
+</body>
+</html>
