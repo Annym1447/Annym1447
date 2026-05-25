@@ -233,6 +233,197 @@ body {
 .font-opt:hover  { background: #2a2a7a; }
 .font-opt.active { border-color: #00e5b0; color: #00e5b0; }
 
+/* ── Canvas de dibujo ─────────────────────────── */
+.draw-canvas-wrap {
+  display: none;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  flex-direction: column;
+}
+.draw-canvas-wrap.active { display: flex; }
+
+#draw-canvas {
+  flex: 1;
+  width: 100%;
+  cursor: crosshair;
+  touch-action: none;
+  display: block;
+}
+
+.draw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,.85);
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.draw-toolbar.dark { background: rgba(26,26,46,.85); border-top-color: #2a2a6a; }
+
+.draw-tool-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: #f0f0f0;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.draw-tool-btn:hover  { background: #e0e0e0; }
+.draw-tool-btn.active { border-color: #ff3d8b; background: #ffe0ee; }
+.draw-tool-btn.dark   { background: #1a1a4a; color: #fff; }
+.draw-tool-btn.dark:hover { background: #2a2a6a; }
+.draw-tool-btn.dark.active { border-color: #00e5b0; background: #002a20; }
+
+.draw-colors {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.draw-color {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .1s;
+}
+.draw-color:hover    { transform: scale(1.2); }
+.draw-color.active   { border-color: #ff3d8b; transform: scale(1.15); }
+
+.draw-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+.draw-size-wrap label { font-size: 11px; color: #888; font-family: 'Nunito', sans-serif; }
+#draw-size {
+  width: 64px;
+  accent-color: #ff3d8b;
+}
+
+.draw-clear-btn {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  color: #ff3d8b;
+  background: none;
+  border: 1px solid #ff3d8b;
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.draw-clear-btn:hover { background: #ffe0ee; }
+
+/* ── Panel de adjuntos ────────────────────────── */
+.attach-panel {
+  display: none;
+  padding: 10px 14px;
+  background: rgba(255,255,255,.92);
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.attach-panel.open { display: flex; }
+.attach-panel.dark { background: rgba(13,13,43,.92); border-top-color: #2a2a6a; }
+
+.attach-drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  color: #aaa;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.attach-drop-zone:hover,
+.attach-drop-zone.drag-over {
+  border-color: #ff3d8b;
+  background: #fff0f6;
+  color: #ff3d8b;
+}
+.attach-drop-zone.dark { border-color: #2a2a6a; color: #555; }
+.attach-drop-zone.dark:hover { border-color: #00e5b0; background: #002a20; color: #00e5b0; }
+
+.attach-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.attach-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: 'Nunito', sans-serif;
+  max-width: 160px;
+}
+.attach-item.dark { background: #1a1a4a; color: #ccc; }
+.attach-item img.attach-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.attach-item .attach-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80px;
+}
+.attach-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ff3d8b;
+  color: #fff;
+  border: none;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/*  Modos de vista del canvas-area */
+.canvas-area.draw-mode .entry-textarea,
+.canvas-area.draw-mode .entry-date,
+.canvas-area.draw-mode .char-count { display: none; }
+.canvas-area.draw-mode .draw-canvas-wrap { display: flex; }
+
+.canvas-area.write-mode .draw-canvas-wrap { display: none; }
+.canvas-area.write-mode .entry-textarea,
+.canvas-area.write-mode .entry-date,
+.canvas-area.write-mode .char-count { display: block; }
+.canvas-area.write-mode .char-count { display: block; }
+
+/* Botón modo dibujo activo en sidebar */
+.tool-btn.draw-active { background: rgba(255,255,255,.35); box-shadow: 0 0 0 2px #fff; }
+
 /* ── Toast ────────────────────────────────────── */
 .toast {
   position: fixed;
