@@ -114,6 +114,31 @@
 
         <div class="auth-divider" style="margin-top:20px"></div>
 
+        <!-- Amigos -->
+        <p class="auth-section-title">👥 Amigos</p>
+        <!-- Mi código -->
+        <div style="background:#0d0d2b;border:1.5px solid #2a2a6a;border-radius:14px;padding:14px 16px;margin-bottom:12px">
+          <p style="font-size:11px;font-weight:800;color:#6060aa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Tu código de invitación</p>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span id="profCodigo" style="font-size:22px;font-weight:900;color:#00e5b0;letter-spacing:.15em;font-family:'Courier New',monospace;flex:1">—</span>
+            <button id="btnCopiarCodigo" style="background:#1a1a5a;border:1px solid #2a2a7a;border-radius:10px;color:#00e5b0;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;padding:7px 14px;cursor:pointer;white-space:nowrap">📋 Copiar</button>
+          </div>
+          <p style="font-size:11px;color:#6060aa;font-weight:600;margin-top:6px">Compártelo para que te agreguen como amigo</p>
+        </div>
+        <!-- Agregar amigo -->
+        <div class="auth-field">
+          <label class="auth-label">Pegar código de un amigo</label>
+          <div style="display:flex;gap:8px">
+            <input class="auth-input" id="inputAgregarAmigo" type="text"
+                   placeholder="Ej: A3F8C21D" maxlength="12"
+                   style="text-transform:uppercase;letter-spacing:.1em;font-weight:700">
+            <button id="btnAgregarAmigo" style="background:#ff3d8b;border:none;border-radius:12px;color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;padding:0 18px;cursor:pointer;white-space:nowrap;transition:background .15s">➕</button>
+          </div>
+          <div id="agregarAmigoMsg" style="font-size:12px;font-weight:700;margin-top:8px;padding:8px 12px;border-radius:10px;display:none"></div>
+        </div>
+
+        <div class="auth-divider" style="margin-top:20px"></div>
+
         <!-- Cambiar credenciales -->
         <p class="auth-section-title">Cambiar correo o contraseña</p>
         <div class="auth-field">
@@ -247,6 +272,72 @@
     row.querySelectorAll(".avatar-opt").forEach(btn => {
       btn.classList.toggle("selected", btn.textContent === (user.avatar_emoji || "😊"));
     });
+    // Cargar código de invitación
+    cargarCodigoInvitacion();
+  }
+
+  async function cargarCodigoInvitacion() {
+    try {
+      const { data } = await apiGet("/api/amigos/mi_codigo");
+      const codigo = data.codigo || "—";
+      const el = document.getElementById("profCodigo");
+      if (el) el.textContent = codigo;
+
+      // Botón copiar código
+      const btnCopiar = document.getElementById("btnCopiarCodigo");
+      if (btnCopiar) {
+        btnCopiar.onclick = async () => {
+          const link = `${location.origin}/amigos?unirse=${codigo}`;
+          try { await navigator.clipboard.writeText(link); }
+          catch (_) {
+            const ta = document.createElement("textarea");
+            ta.value = link; document.body.appendChild(ta);
+            ta.select(); document.execCommand("copy");
+            document.body.removeChild(ta);
+          }
+          btnCopiar.textContent = "✅ ¡Copiado!";
+          setTimeout(() => btnCopiar.textContent = "📋 Copiar", 2000);
+        };
+      }
+
+      // Botón agregar amigo
+      const btnAgregar = document.getElementById("btnAgregarAmigo");
+      const inputAmigo = document.getElementById("inputAgregarAmigo");
+      const msgAmigo   = document.getElementById("agregarAmigoMsg");
+      if (btnAgregar) {
+        const doAgregar = async () => {
+          const cod = inputAmigo.value.trim().toUpperCase();
+          msgAmigo.style.display = "none";
+          if (!cod) { mostrarMsgAmigo("Escribe un código", false); return; }
+          btnAgregar.disabled = true;
+          try {
+            const { ok, data } = await apiPost("/api/amigos/aceptar", { codigo: cod });
+            if (ok && data.ok) {
+              mostrarMsgAmigo(`🎉 ¡Ahora eres amigo de ${data.amigo.nombre}!`, true);
+              inputAmigo.value = "";
+            } else {
+              mostrarMsgAmigo(data.error || "Error al agregar", false);
+            }
+          } catch (_) {
+            mostrarMsgAmigo("No se pudo conectar", false);
+          } finally {
+            btnAgregar.disabled = false;
+          }
+        };
+        btnAgregar.onclick = doAgregar;
+        inputAmigo.onkeydown = e => { if (e.key === "Enter") doAgregar(); };
+      }
+    } catch (_) {}
+  }
+
+  function mostrarMsgAmigo(texto, esOk) {
+    const el = document.getElementById("agregarAmigoMsg");
+    if (!el) return;
+    el.textContent = texto;
+    el.style.display = "block";
+    el.style.color      = esOk ? "#00e5b0" : "#ff3d8b";
+    el.style.background = esOk ? "rgba(0,229,176,.08)" : "rgba(255,61,139,.08)";
+    el.style.border     = esOk ? "1px solid rgba(0,229,176,.2)" : "1px solid rgba(255,61,139,.2)";
   }
 
   // ── Abrir / Cerrar modal ─────────────────────────────────────────────────────
