@@ -371,17 +371,28 @@ async function guardarEntrada() {
     adjuntos: adjuntos.map(({ nombre, mime_type, data }) => ({ nombre, mime_type, data })),
   };
 
-  const res = await fetch("/api/entradas", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  const saveBtn = document.getElementById("save-btn");
+  if (saveBtn) saveBtn.disabled = true;
 
-  if (res.ok) {
-    mostrarToast("¡Entrada guardada! 🎉");
-    setTimeout(() => { window.location.href = "/"; }, 1500);
-  } else {
-    mostrarToast("Error al guardar");
+  try {
+    const res = await fetch("/api/entradas", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      mostrarToast("¡Entrada guardada! 🎉");
+      setTimeout(() => { window.location.href = "/entradas"; }, 1500);
+    } else {
+      const err = await res.json().catch(() => ({}));
+      mostrarToast("Error al guardar: " + (err.error || res.status));
+    }
+  } catch (e) {
+    mostrarToast("Error de conexión 😕");
+  } finally {
+    if (saveBtn) saveBtn.disabled = false;
   }
 }
 
