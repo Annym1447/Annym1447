@@ -3,49 +3,151 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Nueva entrada · MoodSketch</title>
+
+  <title>MoodSketch</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}" />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='editor.css') }}"
+  />
 </head>
+
 <body>
 
-  <!-- ── Navbar ── -->
+  <!-- ───────── NAVBAR ───────── -->
   <nav class="navbar">
-    <a href="/" class="nav-back">←</a>
-    <span class="nav-title">NUEVA ENTRADA</span>
-    <span class="mood-display" id="mood-display">😊</span>
+
+    <!-- Menú -->
+    <button class="menu-btn">
+      ☰
+    </button>
+
+    <!-- Logo -->
+    <h1 class="nav-title">
+      MOODSKETCH
+    </h1>
+
+    <!-- Perfil -->
+    <button class="profile-btn">
+      👤
+    </button>
+
   </nav>
 
-  <!-- ── Layout principal ── -->
-  <div class="editor-layout">
+  <!-- ───────── CONTENEDOR PRINCIPAL ───────── -->
+  <main class="editor-layout">
 
-    <!-- ── Sidebar de herramientas ── -->
+    <!-- ───────── HUD / SIDEBAR ───────── -->
     <aside class="sidebar">
 
-      <!-- Escribir -->
-      <button class="tool-btn active" id="tool-escribir" title="Escribir">✏️</button>
+      <!-- ESCRIBIR -->
+      <button
+        class="tool-btn active"
+        id="tool-escribir"
+        title="Escribir"
+      >
+        ✏️
+      </button>
 
-      <!-- Dibujar -->
-      <button class="tool-btn" id="tool-dibujo" title="Dibujar">🖌️</button>
+      <!-- DIBUJAR -->
+      <button
+        class="tool-btn"
+        id="tool-dibujo"
+        title="Dibujar"
+      >
+        🖌️
+      </button>
 
-      <!-- Color de fondo -->
-      <div class="color-picker-wrap">
-        <button class="tool-btn" id="tool-color" title="Color de fondo">🎨</button>
+      <!-- IMAGENES -->
+      <button
+        class="tool-btn"
+        id="tool-imagen"
+        title="Imagen"
+      >
+        🖼️
+      </button>
+
+      <!-- COLOR -->
+      <div class="tool-group">
+
+        <button
+          class="tool-btn"
+          id="tool-color"
+          title="Color de fondo"
+        >
+          🎨
+        </button>
+
+        <!-- PANEL DE COLORES -->
         <div class="color-palette" id="color-palette">
-          <span class="color-dot" data-bg="#ffffff" data-grid="#e0e0e0" style="background:#ffffff; border:1px solid #ccc"></span>
-          <span class="color-dot" data-bg="#fff9f0" data-grid="#f0e0c0" style="background:#fff9f0"></span>
-          <span class="color-dot" data-bg="#f0fff4" data-grid="#c0f0d0" style="background:#f0fff4"></span>
-          <span class="color-dot" data-bg="#f0f4ff" data-grid="#c0d0f0" style="background:#f0f4ff"></span>
-          <span class="color-dot" data-bg="#fff0f6" data-grid="#f0c0d8" style="background:#fff0f6"></span>
-          <span class="color-dot" data-bg="#1a1a2e" data-grid="#2a2a4e" style="background:#1a1a2e"></span>
+
+          <span
+            class="color-dot"
+            data-bg="#ffffff"
+            data-grid="#d0d0d0"
+            style="background:#ffffff;border:1px solid #ccc"
+          ></span>
+
+          <span
+            class="color-dot"
+            data-bg="#fff7f0"
+            data-grid="#f0d6ba"
+            style="background:#fff7f0"
+          ></span>
+
+          <span
+            class="color-dot"
+            data-bg="#f0fff7"
+            data-grid="#bce8cf"
+            style="background:#f0fff7"
+          ></span>
+
+          <span
+            class="color-dot"
+            data-bg="#f2f4ff"
+            data-grid="#c6cff8"
+            style="background:#f2f4ff"
+          ></span>
+
+          <span
+            class="color-dot"
+            data-bg="#fff0f8"
+            data-grid="#f5bfd8"
+            style="background:#fff0f8"
+          ></span>
+
+          <span
+            class="color-dot"
+            data-bg="#1f1f2e"
+            data-grid="#34344e"
+            style="background:#1f1f2e"
+          ></span>
+
         </div>
+
       </div>
 
-      <!-- Humor -->
-      <div class="color-picker-wrap">
-        <button class="tool-btn" id="tool-humor" title="Estado de ánimo">😊</button>
+      <!-- HUMOR -->
+      <div class="tool-group">
+
+        <button
+          class="tool-btn"
+          id="tool-humor"
+          title="Estado de ánimo"
+        >
+          😊
+        </button>
+
+        <!-- PANEL HUMOR -->
         <div class="mood-panel" id="mood-panel">
+
           <button class="mood-opt" data-mood="😊">😊</button>
           <button class="mood-opt" data-mood="😄">😄</button>
           <button class="mood-opt" data-mood="😢">😢</button>
@@ -54,92 +156,282 @@
           <button class="mood-opt" data-mood="🤩">🤩</button>
           <button class="mood-opt" data-mood="😰">😰</button>
           <button class="mood-opt" data-mood="🥰">🥰</button>
+
         </div>
+
       </div>
 
-      <!-- Fuente -->
-      <button class="tool-btn" id="tool-texto" title="Fuente" style="font-size:14px;font-weight:900;">Aa</button>
+      <!-- TEXTO -->
+      <button
+        class="tool-btn"
+        id="tool-texto"
+        title="Fuente"
+      >
+        T
+      </button>
 
-      <!-- Adjuntar archivos -->
-      <button class="tool-btn" id="tool-adjunto" title="Adjuntar archivo">📎</button>
+      <!-- ADJUNTOS -->
+      <button
+        class="tool-btn"
+        id="tool-adjunto"
+        title="Adjuntar archivo"
+      >
+        📎
+      </button>
 
       <div class="sidebar-spacer"></div>
 
-      <!-- Guardar -->
-      <button class="tool-btn save" id="save-btn" title="Guardar">💾</button>
+      <!-- GUARDAR -->
+      <button
+        class="tool-btn save-btn"
+        id="save-btn"
+        title="Guardar"
+      >
+        ✔
+      </button>
+
     </aside>
 
-    <!-- ── Área de canvas (escritura + dibujo) ── -->
-    <div class="canvas-area write-mode" id="canvas-area">
+    <!-- ───────── ZONA DEL CANVAS ───────── -->
+    <section
+      class="canvas-area write-mode"
+      id="canvas-area"
+    >
 
-      <!-- Fecha (modo escritura) -->
-      <div class="entry-date" id="entry-date"></div>
+      <!-- GRID -->
+      <div class="grid-layer"></div>
 
-      <!-- Textarea (modo escritura) -->
-      <textarea
-        class="entry-textarea"
-        id="entry-text"
-        placeholder="¿Cómo te sientes hoy?…"
-        maxlength="3000"
-        autofocus
-      ></textarea>
+      <!-- FECHA -->
+      <div
+        class="entry-date"
+        id="entry-date"
+      ></div>
 
-      <!-- Contador de caracteres -->
-      <div class="char-count" id="char-count">0 / 3000</div>
+      <!-- CAJA TEXTO -->
+      <div class="text-box">
 
-      <!-- Canvas de dibujo (modo dibujo) -->
-      <div class="draw-canvas-wrap" id="draw-canvas-wrap">
-        <!-- El canvas se inserta por JS -->
+        <textarea
+          class="entry-textarea"
+          id="entry-text"
+          placeholder="Inserte un texto"
+          maxlength="3000"
+          autofocus
+        ></textarea>
 
-        <!-- Barra de herramientas del canvas -->
-        <div class="draw-toolbar" id="draw-toolbar">
-          <button class="draw-tool-btn" id="btn-pen" title="Lápiz">✏️</button>
-          <button class="draw-tool-btn" id="btn-eraser" title="Borrador">🧹</button>
+      </div>
 
+      <!-- CONTADOR -->
+      <div
+        class="char-count"
+        id="char-count"
+      >
+        0 / 3000
+      </div>
+
+      <!-- ───────── CANVAS DIBUJO ───────── -->
+      <div
+        class="draw-canvas-wrap"
+        id="draw-canvas-wrap"
+      >
+
+        <!-- CANVAS POR JS -->
+
+        <!-- TOOLBAR DIBUJO -->
+        <div
+          class="draw-toolbar"
+          id="draw-toolbar"
+        >
+
+          <!-- LAPIZ -->
+          <button
+            class="draw-tool-btn"
+            id="btn-pen"
+            title="Lápiz"
+          >
+            ✏️
+          </button>
+
+          <!-- BORRADOR -->
+          <button
+            class="draw-tool-btn"
+            id="btn-eraser"
+            title="Borrador"
+          >
+            🧹
+          </button>
+
+          <!-- COLORES -->
           <div class="draw-colors">
-            <span class="draw-color" data-color="#ff3d8b" style="background:#ff3d8b"></span>
-            <span class="draw-color" data-color="#00e5b0" style="background:#00e5b0"></span>
-            <span class="draw-color" data-color="#4a90e2" style="background:#4a90e2"></span>
-            <span class="draw-color" data-color="#f5a623" style="background:#f5a623"></span>
-            <span class="draw-color" data-color="#7b5ea7" style="background:#7b5ea7"></span>
-            <span class="draw-color" data-color="#222222" style="background:#222"></span>
-            <span class="draw-color" data-color="#ffffff" style="background:#fff; border:1px solid #ccc"></span>
+
+            <span
+              class="draw-color"
+              data-color="#ff3d8b"
+              style="background:#ff3d8b"
+            ></span>
+
+            <span
+              class="draw-color"
+              data-color="#00e5b0"
+              style="background:#00e5b0"
+            ></span>
+
+            <span
+              class="draw-color"
+              data-color="#4a90e2"
+              style="background:#4a90e2"
+            ></span>
+
+            <span
+              class="draw-color"
+              data-color="#f5a623"
+              style="background:#f5a623"
+            ></span>
+
+            <span
+              class="draw-color"
+              data-color="#7b5ea7"
+              style="background:#7b5ea7"
+            ></span>
+
+            <span
+              class="draw-color"
+              data-color="#222222"
+              style="background:#222"
+            ></span>
+
+            <span
+              class="draw-color"
+              data-color="#ffffff"
+              style="background:#fff;border:1px solid #ccc"
+            ></span>
+
           </div>
 
+          <!-- TAMAÑO -->
           <div class="draw-size-wrap">
-            <label for="draw-size">⬤</label>
-            <input type="range" id="draw-size" min="1" max="32" value="4" />
+
+            <label for="draw-size">
+              ⬤
+            </label>
+
+            <input
+              type="range"
+              id="draw-size"
+              min="1"
+              max="32"
+              value="4"
+            />
+
           </div>
 
-          <button class="draw-clear-btn" id="btn-clear-draw">Limpiar</button>
+          <!-- LIMPIAR -->
+          <button
+            class="draw-clear-btn"
+            id="btn-clear-draw"
+          >
+            Limpiar
+          </button>
+
         </div>
+
       </div>
 
-      <!-- Panel de adjuntos (visible sobre el canvas) -->
-      <div class="attach-panel" id="attach-panel">
-        <div class="attach-drop-zone" id="attach-drop-zone">
-          📎 Arrastra archivos o toca para seleccionar<br>
-          <span style="font-size:11px; opacity:.6">Imágenes, PDF, documentos · máx 10 MB · 5 archivos</span>
+      <!-- ───────── PANEL ADJUNTOS ───────── -->
+      <div
+        class="attach-panel"
+        id="attach-panel"
+      >
+
+        <div
+          class="attach-drop-zone"
+          id="attach-drop-zone"
+        >
+
+          📎 Arrastra archivos o toca para seleccionar
+
+          <br>
+
+          <span class="attach-info">
+            Imágenes, PDF, documentos · máx 10 MB · 5 archivos
+          </span>
+
         </div>
-        <div class="attach-list" id="attach-list"></div>
-        <input type="file" id="file-input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.mp3,.wav,.zip" style="display:none" />
+
+        <!-- LISTA -->
+        <div
+          class="attach-list"
+          id="attach-list"
+        ></div>
+
+        <!-- INPUT -->
+        <input
+          type="file"
+          id="file-input"
+          multiple
+          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.mp3,.wav,.zip"
+          style="display:none"
+        />
+
       </div>
 
-    </div><!-- /.canvas-area -->
+      <!-- FLECHA -->
+      <button class="back-arrow">
+        ←
+      </button>
 
-  </div><!-- /.editor-layout -->
+    </section>
 
-  <!-- Panel de fuentes (bottom sheet) -->
-  <div class="font-panel" id="font-panel">
-    <button class="font-opt active" data-font="'Nunito', sans-serif">Nunito</button>
-    <button class="font-opt" data-font="'Georgia', serif" style="font-family:Georgia">Georgia</button>
-    <button class="font-opt" data-font="'Courier New', monospace" style="font-family:'Courier New'">Mono</button>
-    <button class="font-opt" data-font="cursive" style="font-family:cursive">Cursiva</button>
+  </main>
+
+  <!-- ───────── PANEL FUENTES ───────── -->
+  <div
+    class="font-panel"
+    id="font-panel"
+  >
+
+    <button
+      class="font-opt active"
+      data-font="'Nunito', sans-serif"
+    >
+      Nunito
+    </button>
+
+    <button
+      class="font-opt"
+      data-font="'Georgia', serif"
+      style="font-family:Georgia"
+    >
+      Georgia
+    </button>
+
+    <button
+      class="font-opt"
+      data-font="'Courier New', monospace"
+      style="font-family:'Courier New'"
+    >
+      Mono
+    </button>
+
+    <button
+      class="font-opt"
+      data-font="cursive"
+      style="font-family:cursive"
+    >
+      Cursiva
+    </button>
+
   </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+  <!-- ───────── TOAST ───────── -->
+  <div
+    class="toast"
+    id="toast"
+  ></div>
 
-  <script src="{{ url_for('static', filename='editor.js') }}"></script>
+  <!-- ───────── JS ───────── -->
+  <script
+    src="{{ url_for('static', filename='editor.js') }}"
+  ></script>
+
 </body>
 </html>
