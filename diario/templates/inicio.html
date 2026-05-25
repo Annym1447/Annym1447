@@ -198,10 +198,9 @@
 
       banner.innerHTML = `
         <a href="/amigos" class="banner-amigos-main" style="text-decoration:none">
-          <div class="banner-amigos-left">
-              <p class="banner-amigos-nologin-text" style="text-align: center;">🤝 ¡Siempre contigo!</p>
-              <p class="banner-amigos-nologin-hint" style="text-align: center;">Inicia sesión para invitar amigos</p>
-
+          <div>
+            <p class="banner-amigos-title">🤝 Mis amigos</p>
+            <p class="banner-amigos-sub">Tu código: <strong style="color:#fff;letter-spacing:.12em;font-family:'Courier New',monospace">${codigo}</strong></p>
           </div>
           <span class="banner-amigos-count">${totalAmigos} amigo${totalAmigos !== 1 ? "s" : ""}</span>
         </a>
