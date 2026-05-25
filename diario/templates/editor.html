@@ -1,103 +1,145 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Nueva entrada · MoodSketch</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/editor.css">
-  <link rel="stylesheet" href="/static/css/auth-modal.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}" />
 </head>
 <body>
 
-  <!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
+  <!-- ── Navbar ── -->
   <nav class="navbar">
-    <a href="/" class="nav-back" aria-label="Volver">←</a>
+    <a href="/" class="nav-back">←</a>
     <span class="nav-title">NUEVA ENTRADA</span>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span class="mood-display" id="mood-display">😊</span>
-      <!-- Botón de usuario → abre el modal de auth -->
-      <button class="nav-user-btn" id="navUserBtn" aria-label="Usuario" title="Usuario">
-        <span class="nav-user-avatar" id="navUserAvatar">👤</span>
-      </button>
-    </div>
+    <span class="mood-display" id="mood-display">😊</span>
   </nav>
 
-  <!-- ── Layout editor ──────────────────────────────────────────────────────── -->
+  <!-- ── Layout principal ── -->
   <div class="editor-layout">
 
-    <!-- ── Sidebar herramientas ───────────────────────────────────────────── -->
+    <!-- ── Sidebar de herramientas ── -->
     <aside class="sidebar">
+
       <!-- Escribir -->
       <button class="tool-btn active" id="tool-escribir" title="Escribir">✏️</button>
+
+      <!-- Dibujar -->
+      <button class="tool-btn" id="tool-dibujo" title="Dibujar">🖌️</button>
 
       <!-- Color de fondo -->
       <div class="color-picker-wrap">
         <button class="tool-btn" id="tool-color" title="Color de fondo">🎨</button>
         <div class="color-palette" id="color-palette">
-          <span class="color-dot active" data-bg="#ffffff" data-grid="#e0e0e0" style="background:#ffffff;border:1px solid #ccc" title="Blanco"></span>
-          <span class="color-dot" data-bg="#fff9f0" data-grid="#f5e6cc" style="background:#fff9f0" title="Crema"></span>
-          <span class="color-dot" data-bg="#f0fff4" data-grid="#c6f6d5" style="background:#f0fff4" title="Menta"></span>
-          <span class="color-dot" data-bg="#fff0f6" data-grid="#ffd6e7" style="background:#fff0f6" title="Rosa"></span>
-          <span class="color-dot" data-bg="#f0f4ff" data-grid="#c3d2f5" style="background:#f0f4ff" title="Cielo"></span>
-          <span class="color-dot" data-bg="#fffde7" data-grid="#fff176" style="background:#fffde7" title="Amarillo"></span>
-          <span class="color-dot" data-bg="#1a1a2e" data-grid="#2a2a4a" style="background:#1a1a2e" title="Oscuro"></span>
+          <span class="color-dot" data-bg="#ffffff" data-grid="#e0e0e0" style="background:#ffffff; border:1px solid #ccc"></span>
+          <span class="color-dot" data-bg="#fff9f0" data-grid="#f0e0c0" style="background:#fff9f0"></span>
+          <span class="color-dot" data-bg="#f0fff4" data-grid="#c0f0d0" style="background:#f0fff4"></span>
+          <span class="color-dot" data-bg="#f0f4ff" data-grid="#c0d0f0" style="background:#f0f4ff"></span>
+          <span class="color-dot" data-bg="#fff0f6" data-grid="#f0c0d8" style="background:#fff0f6"></span>
+          <span class="color-dot" data-bg="#1a1a2e" data-grid="#2a2a4e" style="background:#1a1a2e"></span>
         </div>
       </div>
 
-      <!-- Humor / estado de ánimo -->
-      <button class="tool-btn" id="tool-humor" title="Estado de ánimo">😊</button>
-      <div class="mood-panel" id="mood-panel">
-        <button class="mood-opt" data-mood="😊" title="Feliz">😊</button>
-        <button class="mood-opt" data-mood="😢" title="Triste">😢</button>
-        <button class="mood-opt" data-mood="😤" title="Enojado">😤</button>
-        <button class="mood-opt" data-mood="😴" title="Cansado">😴</button>
-        <button class="mood-opt" data-mood="🥳" title="Emocionado">🥳</button>
-        <button class="mood-opt" data-mood="😰" title="Ansioso">😰</button>
-        <button class="mood-opt" data-mood="🤔" title="Pensativo">🤔</button>
-        <button class="mood-opt" data-mood="🥺" title="Nostálgico">🥺</button>
-        <button class="mood-opt" data-mood="😎" title="Cool">😎</button>
-        <button class="mood-opt" data-mood="🤩" title="Inspirado">🤩</button>
+      <!-- Humor -->
+      <div class="color-picker-wrap">
+        <button class="tool-btn" id="tool-humor" title="Estado de ánimo">😊</button>
+        <div class="mood-panel" id="mood-panel">
+          <button class="mood-opt" data-mood="😊">😊</button>
+          <button class="mood-opt" data-mood="😄">😄</button>
+          <button class="mood-opt" data-mood="😢">😢</button>
+          <button class="mood-opt" data-mood="😡">😡</button>
+          <button class="mood-opt" data-mood="😴">😴</button>
+          <button class="mood-opt" data-mood="🤩">🤩</button>
+          <button class="mood-opt" data-mood="😰">😰</button>
+          <button class="mood-opt" data-mood="🥰">🥰</button>
+        </div>
       </div>
 
       <!-- Fuente -->
-      <button class="tool-btn" id="tool-texto" title="Fuente">Aa</button>
+      <button class="tool-btn" id="tool-texto" title="Fuente" style="font-size:14px;font-weight:900;">Aa</button>
+
+      <!-- Adjuntar archivos -->
+      <button class="tool-btn" id="tool-adjunto" title="Adjuntar archivo">📎</button>
 
       <div class="sidebar-spacer"></div>
 
       <!-- Guardar -->
-      <button class="tool-btn save" id="save-btn" title="Guardar entrada">💾</button>
+      <button class="tool-btn save" id="save-btn" title="Guardar">💾</button>
     </aside>
 
-    <!-- ── Área de escritura ───────────────────────────────────────────────── -->
-    <div class="canvas-area" id="canvas-area">
-      <p class="entry-date" id="entry-date"></p>
+    <!-- ── Área de canvas (escritura + dibujo) ── -->
+    <div class="canvas-area write-mode" id="canvas-area">
+
+      <!-- Fecha (modo escritura) -->
+      <div class="entry-date" id="entry-date"></div>
+
+      <!-- Textarea (modo escritura) -->
       <textarea
         class="entry-textarea"
         id="entry-text"
-        placeholder="Escribe lo que sientes hoy…"
+        placeholder="¿Cómo te sientes hoy?…"
         maxlength="3000"
         autofocus
       ></textarea>
-      <p class="char-count" id="char-count">0 / 3000</p>
-    </div>
-  </div><!-- /editor-layout -->
 
-  <!-- ── Panel de fuentes (fijo en la parte inferior) ───────────────────────── -->
+      <!-- Contador de caracteres -->
+      <div class="char-count" id="char-count">0 / 3000</div>
+
+      <!-- Canvas de dibujo (modo dibujo) -->
+      <div class="draw-canvas-wrap" id="draw-canvas-wrap">
+        <!-- El canvas se inserta por JS -->
+
+        <!-- Barra de herramientas del canvas -->
+        <div class="draw-toolbar" id="draw-toolbar">
+          <button class="draw-tool-btn" id="btn-pen" title="Lápiz">✏️</button>
+          <button class="draw-tool-btn" id="btn-eraser" title="Borrador">🧹</button>
+
+          <div class="draw-colors">
+            <span class="draw-color" data-color="#ff3d8b" style="background:#ff3d8b"></span>
+            <span class="draw-color" data-color="#00e5b0" style="background:#00e5b0"></span>
+            <span class="draw-color" data-color="#4a90e2" style="background:#4a90e2"></span>
+            <span class="draw-color" data-color="#f5a623" style="background:#f5a623"></span>
+            <span class="draw-color" data-color="#7b5ea7" style="background:#7b5ea7"></span>
+            <span class="draw-color" data-color="#222222" style="background:#222"></span>
+            <span class="draw-color" data-color="#ffffff" style="background:#fff; border:1px solid #ccc"></span>
+          </div>
+
+          <div class="draw-size-wrap">
+            <label for="draw-size">⬤</label>
+            <input type="range" id="draw-size" min="1" max="32" value="4" />
+          </div>
+
+          <button class="draw-clear-btn" id="btn-clear-draw">Limpiar</button>
+        </div>
+      </div>
+
+      <!-- Panel de adjuntos (visible sobre el canvas) -->
+      <div class="attach-panel" id="attach-panel">
+        <div class="attach-drop-zone" id="attach-drop-zone">
+          📎 Arrastra archivos o toca para seleccionar<br>
+          <span style="font-size:11px; opacity:.6">Imágenes, PDF, documentos · máx 10 MB · 5 archivos</span>
+        </div>
+        <div class="attach-list" id="attach-list"></div>
+        <input type="file" id="file-input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.mp3,.wav,.zip" style="display:none" />
+      </div>
+
+    </div><!-- /.canvas-area -->
+
+  </div><!-- /.editor-layout -->
+
+  <!-- Panel de fuentes (bottom sheet) -->
   <div class="font-panel" id="font-panel">
     <button class="font-opt active" data-font="'Nunito', sans-serif">Nunito</button>
-    <button class="font-opt" data-font="'Georgia', serif">Serif</button>
-    <button class="font-opt" data-font="'Courier New', monospace">Mono</button>
-    <button class="font-opt" data-font="cursive">Cursiva</button>
+    <button class="font-opt" data-font="'Georgia', serif" style="font-family:Georgia">Georgia</button>
+    <button class="font-opt" data-font="'Courier New', monospace" style="font-family:'Courier New'">Mono</button>
+    <button class="font-opt" data-font="cursive" style="font-family:cursive">Cursiva</button>
   </div>
 
-  <!-- ── Toast de notificaciones ────────────────────────────────────────────── -->
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
-  <script src="/static/js/auth-modal.js"></script>
-  <script src="/static/js/editor.js"></script>
+  <script src="{{ url_for('static', filename='editor.js') }}"></script>
 </body>
 </html>
