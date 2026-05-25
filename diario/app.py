@@ -1,13 +1,16 @@
-from flask import Flask, request, jsonify, render_template, session
+from flask import Flask, request, jsonify, render_template, session, send_from_directory
 from datetime import datetime
-import sqlite3, os, hashlib, secrets
+import sqlite3, os, hashlib, secrets, base64
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 
-DB_PATH = os.environ.get("DB_PATH", "moodsketch.db")
+DB_PATH      = os.environ.get("DB_PATH", "moodsketch.db")
+UPLOADS_DIR  = os.environ.get("UPLOADS_DIR", "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
 
-# ─── Base de datos ────────────────────────────────────────────────────────────
+# Base de datos
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -33,16 +36,27 @@ def init_db():
                 usuario_id INTEGER,
                 texto      TEXT    NOT NULL,
                 humor      TEXT,
+                dibujo     TEXT,
                 fecha      TEXT    NOT NULL,
                 hora       TEXT    NOT NULL,
                 creado_en  TEXT    NOT NULL DEFAULT (datetime('now')),
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
             );
+
+            CREATE TABLE IF NOT EXISTS adjuntos (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                entrada_id INTEGER NOT NULL,
+                nombre     TEXT    NOT NULL,
+                mime_type  TEXT    NOT NULL,
+                ruta       TEXT    NOT NULL,
+                creado_en  TEXT    NOT NULL DEFAULT (datetime('now')),
+                FOREIGN KEY (entrada_id) REFERENCES entradas(id) ON DELETE CASCADE
+            );
         """)
 
 init_db()
 
-# ─── Utilidades ───────────────────────────────────────────────────────────────
+# Utilidades
 
 def hash_password(password: str) -> str:
     salt = secrets.token_hex(16)
@@ -64,7 +78,7 @@ def row_to_dict(row):
     return dict(row) if row else None
 
 
-# ─── Páginas HTML ─────────────────────────────────────────────────────────────
+# Páginas HTML 
 
 @app.route("/")
 def inicio():
@@ -79,7 +93,7 @@ def ver_entradas():
     return render_template("entradas.html")
 
 
-# ─── Auth API ─────────────────────────────────────────────────────────────────
+#Auth API
 
 @app.route("/api/auth/me", methods=["GET"])
 def auth_me():
@@ -172,7 +186,7 @@ def auth_profile():
     return jsonify({"ok": True, "user": session["user"]})
 
 
-# ─── Entradas API ─────────────────────────────────────────────────────────────
+# Entradas API
 
 @app.route("/api/entradas", methods=["GET"])
 def listar_entradas():
@@ -213,17 +227,42 @@ def crear_entrada():
     if not texto:
         return jsonify({"error": "El texto no puede estar vacío"}), 400
 
-    ahora = datetime.now()
-    uid   = user["id"] if user else None
+    ahora  = datetime.now()
+    uid    = user["id"] if user else None
+    dibujo = datos.get("dibujo")  # base64 PNG or None
 
     with get_db() as conn:
         cursor = conn.execute(
-            "INSERT INTO entradas (usuario_id, texto, humor, fecha, hora) VALUES (?,?,?,?,?)",
-            (uid, texto, datos.get("humor"), ahora.strftime("%d/%m/%Y"), ahora.strftime("%H:%M"))
+            "INSERT INTO entradas (usuario_id, texto, humor, dibujo, fecha, hora) VALUES (?,?,?,?,?,?)",
+            (uid, texto, datos.get("humor"), dibujo,
+             ahora.strftime("%d/%m/%Y"), ahora.strftime("%H:%M"))
         )
-        row = conn.execute("SELECT * FROM entradas WHERE id = ?", (cursor.lastrowid,)).fetchone()
+        entrada_id = cursor.lastrowid
+
+        # Guardar adjuntos
+        for adj in datos.get("adjuntos", []):
+            nombre    = adj.get("nombre", "archivo")
+            mime_type = adj.get("mime_type", "application/octet-stream")
+            data_b64  = adj.get("data", "")
+            # Guardar en disco
+            ext   = nombre.rsplit(".", 1)[-1] if "." in nombre else "bin"
+            fname = f"{secrets.token_hex(12)}.{ext}"
+            fpath = os.path.join(UPLOADS_DIR, fname)
+            with open(fpath, "wb") as f:
+                f.write(base64.b64decode(data_b64))
+            conn.execute(
+                "INSERT INTO adjuntos (entrada_id, nombre, mime_type, ruta) VALUES (?,?,?,?)",
+                (entrada_id, nombre, mime_type, fname)
+            )
+
+        row = conn.execute("SELECT * FROM entradas WHERE id = ?", (entrada_id,)).fetchone()
 
     return jsonify(dict(row)), 201
+
+
+@app.route("/api/adjuntos/<path:fname>")
+def servir_adjunto(fname):
+    return send_from_directory(UPLOADS_DIR, fname)
 
 
 @app.route("/api/entradas/<int:entrada_id>", methods=["DELETE"])
@@ -259,7 +298,7 @@ def estadisticas():
     return jsonify({"total": total, "dias": dias, "humor_top": humor_top})
 
 
-# ─── Arranque ─────────────────────────────────────────────────────────────────
+# Arranque
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
