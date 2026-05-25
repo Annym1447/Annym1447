@@ -14,7 +14,7 @@
     .entries-page {
       padding: 16px;
     }
-
+ 
     /* ── Filtros ── */
     .filters {
       display: flex;
@@ -36,7 +36,7 @@
     }
     .filter-btn:hover  { background: #1a1a5a; color: #fff; }
     .filter-btn.active { background: #ff3d8b; border-color: #ff3d8b; color: #fff; }
-
+ 
     /* ── Barra de búsqueda ── */
     .search-bar {
       display: flex;
@@ -62,14 +62,14 @@
       font-weight: 600;
     }
     .search-input::placeholder { color: #3a3a7a; }
-
+ 
     /* ── Lista de entradas ── */
     .entries-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-
+ 
     .entry-card {
       background: #13134a;
       border: 1px solid #2a2a6a;
@@ -80,7 +80,7 @@
       cursor: default;
     }
     .entry-card:hover { transform: translateY(-1px); border-color: #3a3a8a; }
-
+ 
     .entry-card-header {
       display: flex;
       align-items: center;
@@ -114,7 +114,7 @@
       transition: color .15s, background .15s;
     }
     .entry-delete:hover { color: #ff3d8b; background: rgba(255,61,139,.08); }
-
+ 
     .entry-card-text {
       font-size: 14px;
       font-weight: 600;
@@ -126,7 +126,7 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
+ 
     /* ── Estado vacío ── */
     .empty-state {
       text-align: center;
@@ -166,7 +166,7 @@
       text-decoration: none;
       box-shadow: 0 4px 20px rgba(255,61,139,.4);
     }
-
+ 
     /* ── Loading skeleton ── */
     .skeleton {
       background: linear-gradient(90deg, #13134a 25%, #1a1a5a 50%, #13134a 75%);
@@ -179,7 +179,39 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-
+ 
+    /* ── Dibujo en tarjeta ── */
+    .entry-drawing {
+      margin-top: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0d0d2b;
+      border: 1px solid #2a2a6a;
+      max-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .entry-drawing img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      display: block;
+      border-radius: 12px;
+    }
+    .entry-tag-dibujo {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      color: #ff3d8b;
+      background: rgba(255,61,139,.1);
+      border: 1px solid rgba(255,61,139,.2);
+      border-radius: 6px;
+      padding: 2px 8px;
+      margin-top: 8px;
+      letter-spacing: .05em;
+    }
+ 
     @media (min-width: 768px) {
       .entries-list {
         display: grid;
@@ -191,7 +223,7 @@
   </style>
 </head>
 <body>
-
+ 
   <!-- ── Navbar ─────────────────────────────────────────────────────────────── -->
   <nav class="navbar">
     <a href="/" class="nav-icon" style="text-decoration:none" aria-label="Inicio">←</a>
@@ -201,10 +233,10 @@
       <span class="nav-user-avatar" id="navUserAvatar">👤</span>
     </button>
   </nav>
-
+ 
   <!-- ── Contenido principal ────────────────────────────────────────────────── -->
   <main class="entries-page">
-
+ 
     <!-- Barra de búsqueda -->
     <div class="search-bar">
       <span>🔍</span>
@@ -216,7 +248,7 @@
         autocomplete="off"
       >
     </div>
-
+ 
     <!-- Filtros por humor -->
     <div class="filters" id="filtersBar">
       <button class="filter-btn active" data-humor="">Todas</button>
@@ -229,7 +261,7 @@
       <button class="filter-btn" data-humor="🤔">🤔 Pensativo</button>
       <button class="filter-btn" data-humor="🥺">🥺 Nostálgico</button>
     </div>
-
+ 
     <!-- Lista de entradas -->
     <div class="entries-list" id="entriesList">
       <!-- Skeletons de carga -->
@@ -237,9 +269,9 @@
       <div class="skeleton"></div>
       <div class="skeleton"></div>
     </div>
-
+ 
   </main>
-
+ 
   <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
   <script src="/static/js/auth-modal.js"></script>
   <script>
@@ -247,15 +279,15 @@
     let humorFiltro = "";
     let buscarTexto = "";
     let searchTimer = null;
-
+ 
     // ── Cargar entradas ─────────────────────────────────────────────────────
     async function cargarEntradas() {
       const params = new URLSearchParams();
       if (humorFiltro) params.set("humor", humorFiltro);
       if (buscarTexto) params.set("buscar", buscarTexto);
-
+ 
       try {
-        const res  = await fetch(`/api/entradas?${params}`);
+        const res  = await fetch(`/api/entradas?${params}`, { credentials: 'include' });
         const data = await res.json();
         renderEntradas(data);
       } catch (_) {
@@ -265,11 +297,11 @@
            </p>`;
       }
     }
-
+ 
     // ── Renderizar entradas ──────────────────────────────────────────────────
     function renderEntradas(entradas) {
       const list = document.getElementById("entriesList");
-
+ 
       if (!entradas.length) {
         list.innerHTML = `
           <div class="empty-state">
@@ -280,7 +312,7 @@
           </div>`;
         return;
       }
-
+ 
       list.innerHTML = entradas.map(e => `
         <article class="entry-card" data-id="${e.id}">
           <div class="entry-card-header">
@@ -293,18 +325,23 @@
             </div>
             <button class="entry-delete" onclick="eliminarEntrada(${e.id})" title="Eliminar">🗑️</button>
           </div>
-          <p class="entry-card-text">${escapeHtml(e.texto)}</p>
+          ${e.texto && e.texto !== "(sin texto)" ? `<p class="entry-card-text">${escapeHtml(e.texto)}</p>` : ''}
+          ${e.dibujo ? `
+          <div class="entry-drawing">
+            <img src="${e.dibujo}" alt="Dibujo" loading="lazy">
+          </div>
+          <span class="entry-tag-dibujo">🎨 Dibujo</span>` : ''}
         </article>
       `).join("");
     }
-
+ 
     // ── Eliminar entrada ─────────────────────────────────────────────────────
     async function eliminarEntrada(id) {
       if (!confirm("¿Eliminar esta entrada?")) return;
       await fetch(`/api/entradas/${id}`, { method: "DELETE" });
       cargarEntradas();
     }
-
+ 
     // ── Escape HTML ──────────────────────────────────────────────────────────
     function escapeHtml(str) {
       return str
@@ -313,7 +350,7 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
     }
-
+ 
     // ── Filtros de humor ─────────────────────────────────────────────────────
     document.getElementById("filtersBar").addEventListener("click", e => {
       const btn = e.target.closest(".filter-btn");
@@ -323,14 +360,14 @@
       humorFiltro = btn.dataset.humor;
       cargarEntradas();
     });
-
+ 
     // ── Búsqueda con debounce ────────────────────────────────────────────────
     document.getElementById("searchInput").addEventListener("input", e => {
       clearTimeout(searchTimer);
       buscarTexto = e.target.value.trim();
       searchTimer = setTimeout(cargarEntradas, 300);
     });
-
+ 
     // ── Arranque ─────────────────────────────────────────────────────────────
     cargarEntradas();
   </script>
